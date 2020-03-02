@@ -12,6 +12,7 @@ let nextId = 4;
 
 cartItems.get("/cart-items", (request, response) => {
   response.json(carts);
+  response.status(200);
 });
 
 cartItems.get("/cart-items/:id", (request, response) => {
@@ -20,26 +21,21 @@ cartItems.get("/cart-items/:id", (request, response) => {
   let cartItems2 = carts.find(cart => cart.id === id);
   if (cartItems2) {
     response.json(cartItems2);
-  } else {
     response.status(200);
-    response.send("OK");
+  } else {
+    response.status(404);
+    response.send(`Id:${id} can not be found`);
   }
 });
 
 cartItems.post("/cart-items", (request, response) => {
-  let id = parseInt(request.params.id);
-  let updateCart = request.body;
-  updateCart.id = id;
+  let newCart = request.body;
+  newCart.id = nextId;
   nextId++;
 
-  let index = carts.findIndex(cart => cart.id === id);
-  if (index >= 0) {
-    carts.splice(index, 1, updateCart);
-    response.json(carts);
-  } else {
-    response.status(201);
-    response.send("Created");
-  }
+  carts.push(newCart);
+  response.status(200);
+  response.json(carts);
 });
 
 cartItems.put("/cart-items/:id", (request, response) => {
@@ -59,11 +55,14 @@ cartItems.put("/cart-items/:id", (request, response) => {
 
 cartItems.delete("/cart-items/:id", (request, response) => {
   let id = parseInt(request.params.id);
-let index = carts.findIndex(cart => car.id === id);
-if (index >= 0) {
-  carts.splice(index, i);
-} else {
-  response.send("No Content");
-}
+  let index = carts.findIndex(cart => car.id === id);
+  if (index >= 0) {
+    carts.splice(index, i);
+    response.sendStatus(204);
+  } else {
+    response.status(204);
+    response.send("No Content");
+  }
+});
 
-module.exports = cartItems;
+module.exports = { cartItems };
